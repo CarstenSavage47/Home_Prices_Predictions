@@ -33,34 +33,27 @@ Column_VarType_Dict
 
 HomePrices = pandas.get_dummies(HomePrices)
 
-X = np.array(HomePrices.drop(['SalePrice'],axis=1))
-y = np.array(HomePrices['SalePrice'])
+X = HomePrices.drop(['SalePrice'],axis=1)
+y = HomePrices['SalePrice']
 
-class RE_Dataset(torch.utils.data.Dataset):
-    '''
-    Prepare the dataset for regression
-    '''
+y = np.array(y)
+y = y.reshape(-1, 1)
+X = np.array(X)
 
-    def __init__(self, X, y, scale_data=True):
-        if not torch.is_tensor(X) and not torch.is_tensor(y):
-            # Apply scaling if necessary
-            if scale_data:
-                X = StandardScaler().fit_transform(X)
-            self.X = torch.from_numpy(X)
-            self.y = torch.from_numpy(y)
-
-    def __len__(self):
-        return len(self.X)
-
-    def __getitem__(self, i):
-        return self.X[i], self.y[i]
+# Scaling the data to be between 0 and 1
+min_max_scaler = preprocessing.MinMaxScaler()
+X = min_max_scaler.fit_transform(X)
+y = min_max_scaler.fit_transform(y)
+X = torch.squeeze(torch.from_numpy(X))
+y = torch.squeeze(torch.from_numpy(y))
 
 
 class MLP(nn.Module):
     '''
-    Multilayer Perceptron for regression.
-    Linear Algebra Note: Matrices must have compatible dimensions in multiplication (10x289 and 289x64) = (10x64)
+      Multilayer Perceptron for regression.
+      Linear Algebra Note: Matrices must have compatible dimensions in multiplication (10x289 and 289x64) = (10x64)
     '''
+
     def __init__(self):
         super().__init__()
         self.layers = nn.Sequential(
@@ -83,8 +76,9 @@ if __name__ == '__main__':
     # Set fixed random number seed
     torch.manual_seed(47)
 
-    # Prepare Boston dataset
-    dataset = RE_Dataset(X, y)
+
+    # Prepare dataset
+    dataset = (X, y)
     trainloader = torch.utils.data.DataLoader(dataset, batch_size=10, shuffle=True, num_workers=0)
 
     # Initialize the MLP
@@ -92,7 +86,7 @@ if __name__ == '__main__':
 
     # Define the loss function and optimizer
     loss_function = nn.L1Loss()
-    optimizer = torch.optim.Adam(mlp.parameters(), lr=.1)
+    optimizer = torch.optim.Adam(mlp.parameters(), lr=1e-4)
 
     # Run the training loop
     for epoch in range(0, 5):  # 5 epochs at maximum
