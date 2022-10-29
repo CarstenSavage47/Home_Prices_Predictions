@@ -1,7 +1,7 @@
-# Thank you to Christian Versloot for help with implementing a linear regression in PyTorch.
-# https://github.com/christianversloot/machine-learning-articles/blob/main/how-to-create-a-neural-
-# network-for-regression-with-pytorch.md
-
+'''
+Thank you to Christian Versloot for help with implementing a linear regression in PyTorch.
+https://github.com/christianversloot/machine-learning-articles/blob/main/how-to-create-a-neural-network-for-regression-with-pytorch.md
+'''
 import pandas
 import numpy as np
 import openpyxl
