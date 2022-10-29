@@ -25,7 +25,6 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 import plotly.express as px
 
-
 HomePrices = pandas.read_csv('/Users/carstenjuliansavage/PycharmProjects/RE_Regression/House Prices.csv')
 
 # Group columns by datatypes for inspection
@@ -59,9 +58,9 @@ class RE_Dataset(torch.utils.data.Dataset):
 
 class MLP(nn.Module):
     '''
-      Multilayer Perceptron for regression.
+    Multilayer Perceptron for regression.
+    Linear Algebra Note: Matrices must have compatible dimensions in multiplication (10x289 and 289x64) = (10x64)
     '''
-
     def __init__(self):
         super().__init__()
         self.layers = nn.Sequential(
@@ -93,7 +92,7 @@ if __name__ == '__main__':
 
     # Define the loss function and optimizer
     loss_function = nn.L1Loss()
-    optimizer = torch.optim.Adam(mlp.parameters(), lr=1e-4)
+    optimizer = torch.optim.Adam(mlp.parameters(), lr=.1)
 
     # Run the training loop
     for epoch in range(0, 5):  # 5 epochs at maximum
