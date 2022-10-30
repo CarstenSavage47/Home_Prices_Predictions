@@ -5,21 +5,16 @@ https://github.com/L1aoXingyu/pytorch-beginner/blob/master/01-Linear%20Regressio
 import pandas
 import numpy as np
 import openpyxl
+import os
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
-import torch  # torch provides basic functions, from setting a random seed (for reproducability) to creating tensors.
-import torch.nn.functional as F  # nn.functional give us access to the activation and loss functions.
-from torch.optim import SGD  # optim contains many optimizers. Here, we're using SGD, stochastic gradient descent.
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report
+import torch.nn.functional as F
+from torch.optim import SGD
 from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
 from statsmodels.formula.api import ols
-import matplotlib.pyplot as plt  ## matplotlib allows us to draw graphs.
-import seaborn as sns  ## seaborn makes it easier to draw nice-looking graphs.
-import os
 from tqdm import tqdm
 from pylab import rcParams
 import matplotlib.pyplot as plt
@@ -31,6 +26,11 @@ HomePrices = pandas.read_csv('/Users/carstenjuliansavage/PycharmProjects/RE_Regr
 # Group columns by datatypes for inspection
 Column_VarType_Dict = HomePrices.columns.to_series().groupby(HomePrices.dtypes).groups
 Column_VarType_Dict
+
+# I'm going to make the year vars here strings/objects
+HomePrices = (HomePrices
+              .astype({"YearBuilt":'str',"YearRemodAdd":'str',"GarageYrBlt":'str',"YrSold":'str'})
+              )
 
 HomePrices = pandas.get_dummies(HomePrices)
 
@@ -53,10 +53,10 @@ y = torch.from_numpy(y)
 class linearRegression(nn.Module):
     def __init__(self):
         super(linearRegression, self).__init__()
-        self.linear = nn.Linear(289, 1)  # input -- 289 features and output -- 1 feature
-        # A mxn matrix with 1121 rows and 289 columns (1121x289)
-        # ...must be multiplied with a mxn matrix with 289 rows and 1 column (289x1)
-        # That results in a mxn matrix with dimensions 1121x1.
+        self.linear = nn.Linear(561, 1)  # input -- 561 features and output -- 1 feature
+        # A mxn matrix with 1195 rows and 561 columns (1195x561)
+        # ...must be multiplied with a mxn matrix with 561 rows and 1 column (561x1)
+        # That results in a mxn matrix with dimensions 1195x1.
 
     def forward(self, x):
         out = self.linear(x)
