@@ -1,20 +1,20 @@
 '''
-Thank you to Christian Versloot for help with implementing a linear regression in PyTorch.
-https://github.com/christianversloot/machine-learning-articles/blob/main/how-to-create-a-neural-network-for-regression-with-pytorch.md
-'''
+Thank you to L1aoXingyu for help with implementing a linear regression in PyTorch.
+https://github.com/L1aoXingyu/pytorch-beginner/blob/master/01-Linear%20Regression/Linear_Regression.py'''
 import pandas
 import numpy as np
 import openpyxl
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from sklearn.preprocessing import StandardScaler
+from torch.autograd import Variable
 import torch  # torch provides basic functions, from setting a random seed (for reproducability) to creating tensors.
 import torch.nn.functional as F  # nn.functional give us access to the activation and loss functions.
 from torch.optim import SGD  # optim contains many optimizers. Here, we're using SGD, stochastic gradient descent.
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn import preprocessing
+from sklearn.preprocessing import StandardScaler
 from statsmodels.formula.api import ols
 import matplotlib.pyplot as plt  ## matplotlib allows us to draw graphs.
 import seaborn as sns  ## seaborn makes it easier to draw nice-looking graphs.
