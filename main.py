@@ -34,6 +34,7 @@ Column_VarType_Dict
 
 HomePrices = pandas.get_dummies(HomePrices)
 
+# I needed to get rid of NA values here, otherwise I'd get nan values for loss.
 HomePrices = HomePrices.dropna()
 
 X = np.array(HomePrices.drop(['SalePrice'],axis=1), dtype=np.float32)
