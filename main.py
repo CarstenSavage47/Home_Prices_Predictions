@@ -48,11 +48,9 @@ X = min_max_scaler.fit_transform(X)
 #y = min_max_scaler.fit_transform(y)
 ''' Don't scale the depedent var. '''
 
-# Split dataframe into training and testing data. Remember to set a seed.
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=47)
-
-X_train = torch.from_numpy(X_train)
-y_train = torch.from_numpy(y_train)
+# Converting X and y to tensors for part 1
+X_Tensor = torch.from_numpy(X)
+y_Tensor = torch.from_numpy(y)
 
 # Linear Regression Model
 class linearRegression(nn.Module):
@@ -76,10 +74,11 @@ optimizer = torch.optim.SGD(LinearRegression.parameters(), lr=.01) # Optimal lea
 Remember - Errors mainly refer to difference between actual observed sample values and predicted values,
 Residuals refer exclusively to the differences between dependent variables and estimations from linear regression.
 '''
+
 num_epochs = 100000
 for epoch in range(num_epochs):
-    inputs = X_train
-    target = y_train
+    inputs = X_Tensor
+    target = y_Tensor
 
     # forward
     out = LinearRegression(inputs)
@@ -94,14 +93,8 @@ for epoch in range(num_epochs):
 
 LinearRegression.eval()
 with torch.no_grad():
-    predict = LinearRegression(X_train)
+    predict = LinearRegression(X_Tensor)
 predict = predict.data.numpy()
-
-#fig = plt.figure(figsize=(10, 5))
-#plt.plot(X.numpy(), y.numpy(), 'ro', label='Original data')
-#plt.plot(X.numpy(), predict, label='Fitting Line')
-#plt.legend()
-#plt.show()
 
 torch.save(LinearRegression.state_dict(), './linear.pth')
 
@@ -112,25 +105,27 @@ Comparison.columns=['Predicted_Price','Index','SalePrice']
 Comparison = (Comparison
               .filter(['SalePrice','Predicted_Price'])
               .assign(Difference = lambda a: round(a.SalePrice - a.Predicted_Price,2))
+              .assign(ABSDifference=lambda a: round(abs(a.SalePrice - a.Predicted_Price), 2))
               .assign(Predicted_Price=lambda a: round(a.Predicted_Price))
               #.astype({"Predicted_Price":'int',"Difference":'int'})
               )
 
-X_test = torch.from_numpy(X_test)
-y_test = torch.from_numpy(y_test)
+print('All X and Y Mean Difference:',Comparison.agg({"Difference":'mean'}),'ABS_Difference:',
+      Comparison.agg({"ABSDifference":'mean'}))
 
-LinearRegression.eval()
+
+''' Simulating addition of new data '''
+Shuffled_Data = HomePrices.sample(frac=1/2)
+X_Shuffled = np.array(Shuffled_Data.drop(['SalePrice'],axis=1), dtype=np.float32)
+X_Shuffled = min_max_scaler.fit_transform(X_Shuffled)
+# Converting X to tensors
+X_Shuffled_Tensor = torch.from_numpy(X_Shuffled)
+
+''' Testing new data '''
+# Disable grad
 with torch.no_grad():
-    predict_test = LinearRegression(X_test)
-predict_test = predict_test.data.numpy()
-
-Comparison_test = pandas.concat([pandas.DataFrame(predict_test),HomePrices['SalePrice'].reset_index()],axis=1)
-Comparison_test.columns=['Predicted_Price','Index','SalePrice']
-
-# Compare observed - predicted
-Comparison_test = (Comparison_test
-              .filter(['SalePrice','Predicted_Price'])
-              .assign(Difference = lambda a: round(a.SalePrice - a.Predicted_Price,2))
-              .assign(Predicted_Price=lambda a: round(a.Predicted_Price))
-              #.astype({"Predicted_Price":'int',"Difference":'int'})
-              )
+    print('True SalePrice is:',(Shuffled_Data['SalePrice']).iloc[1])
+    prediction = LinearRegression(X_Shuffled_Tensor[1])
+    print('Predicted SalePrice is:',prediction)
+    print('ABS Difference between observed and predicted:',
+          abs((Shuffled_Data['SalePrice']).iloc[1] - prediction.numpy()))
