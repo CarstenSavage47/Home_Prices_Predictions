@@ -67,10 +67,10 @@ class linearRegression(nn.Module):
 LinearRegression = linearRegression()
 criterion = nn.MSELoss()
 optimizer = torch.optim.SGD(LinearRegression.parameters(), lr=.01) # Optimal learning rate
-
-# Remember - Errors mainly refer to difference between actual observed sample values and predicted values,
-# Residuals refer exclusively to the differences between dependent variables and estimations from linear regression.
-
+'''
+Remember - Errors mainly refer to difference between actual observed sample values and predicted values,
+Residuals refer exclusively to the differences between dependent variables and estimations from linear regression.
+'''
 num_epochs = 1000
 for epoch in range(num_epochs):
     inputs = X
