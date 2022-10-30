@@ -44,7 +44,7 @@ y = y.reshape(-1, 1)
 
 min_max_scaler = preprocessing.MinMaxScaler()
 X = min_max_scaler.fit_transform(X)
-y = min_max_scaler.fit_transform(y)
+#y = min_max_scaler.fit_transform(y)
 
 X = torch.from_numpy(X)
 y = torch.from_numpy(y)
@@ -93,3 +93,15 @@ plt.legend()
 plt.show()
 
 torch.save(LinearRegression.state_dict(), './linear.pth')
+
+predict
+HomePrices['SalePrice'].reset_index()
+
+Comparison = pandas.concat([pandas.DataFrame(predict),HomePrices['SalePrice'].reset_index()],axis=1)
+Comparison.columns=['Predicted_Price','Index','SalePrice']
+
+Comparison = (Comparison
+              .filter(['SalePrice','Predicted_Price'])
+              .assign(Difference = lambda a: abs(a.SalePrice - a.Predicted_Price))
+              )
+
