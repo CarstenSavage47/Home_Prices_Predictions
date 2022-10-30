@@ -14,6 +14,7 @@ import torch.nn.functional as F
 from torch.optim import SGD
 from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 from statsmodels.formula.api import ols
 from tqdm import tqdm
 from pylab import rcParams
@@ -47,8 +48,11 @@ X = min_max_scaler.fit_transform(X)
 #y = min_max_scaler.fit_transform(y)
 ''' Don't scale the depedent var. '''
 
-X = torch.from_numpy(X)
-y = torch.from_numpy(y)
+# Split dataframe into training and testing data. Remember to set a seed.
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=47)
+
+X_train = torch.from_numpy(X_train)
+y_train = torch.from_numpy(y_train)
 
 # Linear Regression Model
 class linearRegression(nn.Module):
@@ -74,8 +78,8 @@ Residuals refer exclusively to the differences between dependent variables and e
 '''
 num_epochs = 100000
 for epoch in range(num_epochs):
-    inputs = X
-    target = y
+    inputs = X_train
+    target = y_train
 
     # forward
     out = LinearRegression(inputs)
@@ -90,7 +94,7 @@ for epoch in range(num_epochs):
 
 LinearRegression.eval()
 with torch.no_grad():
-    predict = LinearRegression(X)
+    predict = LinearRegression(X_train)
 predict = predict.data.numpy()
 
 #fig = plt.figure(figsize=(10, 5))
@@ -104,9 +108,29 @@ torch.save(LinearRegression.state_dict(), './linear.pth')
 Comparison = pandas.concat([pandas.DataFrame(predict),HomePrices['SalePrice'].reset_index()],axis=1)
 Comparison.columns=['Predicted_Price','Index','SalePrice']
 
+# Compare observed - predicted
 Comparison = (Comparison
               .filter(['SalePrice','Predicted_Price'])
               .assign(Difference = lambda a: round(a.SalePrice - a.Predicted_Price,2))
               .assign(Predicted_Price=lambda a: round(a.Predicted_Price))
-              .astype({"Predicted_Price":'int',"Difference":'int'})
+              #.astype({"Predicted_Price":'int',"Difference":'int'})
+              )
+
+X_test = torch.from_numpy(X_test)
+y_test = torch.from_numpy(y_test)
+
+LinearRegression.eval()
+with torch.no_grad():
+    predict_test = LinearRegression(X_test)
+predict_test = predict_test.data.numpy()
+
+Comparison_test = pandas.concat([pandas.DataFrame(predict_test),HomePrices['SalePrice'].reset_index()],axis=1)
+Comparison_test.columns=['Predicted_Price','Index','SalePrice']
+
+# Compare observed - predicted
+Comparison_test = (Comparison_test
+              .filter(['SalePrice','Predicted_Price'])
+              .assign(Difference = lambda a: round(a.SalePrice - a.Predicted_Price,2))
+              .assign(Predicted_Price=lambda a: round(a.Predicted_Price))
+              #.astype({"Predicted_Price":'int',"Difference":'int'})
               )
