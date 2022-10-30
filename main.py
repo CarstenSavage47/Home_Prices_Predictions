@@ -57,7 +57,8 @@ class linearRegression(nn.Module):
         self.linear = nn.Linear(561, 1)  # input -- 561 features and output -- 1 feature
     ''' A mxn matrix with 1195 rows and 561 columns (1195x561)
         ...must be multiplied with a mxn matrix with 561 rows and 1 column (561x1)
-        That results in a mxn matrix with dimensions 1195x1.'''
+        That results in a mxn matrix with dimensions 1195x1.
+    '''
 
     def forward(self, x):
         out = self.linear(x)
