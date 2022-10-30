@@ -44,7 +44,7 @@ y = y.reshape(-1, 1)
 
 min_max_scaler = preprocessing.MinMaxScaler()
 X = min_max_scaler.fit_transform(X)
-#y = min_max_scaler.fit_transform(y)
+#y = min_max_scaler.fit_transform(y) # Don't scale the depedent var
 
 X = torch.from_numpy(X)
 y = torch.from_numpy(y)
@@ -54,6 +54,9 @@ class linearRegression(nn.Module):
     def __init__(self):
         super(linearRegression, self).__init__()
         self.linear = nn.Linear(289, 1)  # input -- 289 features and output -- 1 feature
+        # A mxn matrix with 1121 rows and 289 columns (1121x289)
+        # ...must be multiplied with a mxn matrix with 289 rows and 1 column (289x1)
+        # That results in a mxn matrix with dimensions 1121x1.
 
     def forward(self, x):
         out = self.linear(x)
@@ -62,7 +65,7 @@ class linearRegression(nn.Module):
 
 LinearRegression = linearRegression()
 criterion = nn.MSELoss()
-optimizer = torch.optim.SGD(LinearRegression.parameters(), lr=.01)
+optimizer = torch.optim.SGD(LinearRegression.parameters(), lr=.01) # Optimal learning rate
 
 num_epochs = 1000
 for epoch in range(num_epochs):
@@ -85,12 +88,11 @@ with torch.no_grad():
     predict = LinearRegression(X)
 predict = predict.data.numpy()
 
-fig = plt.figure(figsize=(10, 5))
-plt.plot(X.numpy(), y.numpy(), 'ro', label='Original data')
-plt.plot(X.numpy(), predict, label='Fitting Line')
-
-plt.legend()
-plt.show()
+#fig = plt.figure(figsize=(10, 5))
+#plt.plot(X.numpy(), y.numpy(), 'ro', label='Original data')
+#plt.plot(X.numpy(), predict, label='Fitting Line')
+#plt.legend()
+#plt.show()
 
 torch.save(LinearRegression.state_dict(), './linear.pth')
 
@@ -104,4 +106,3 @@ Comparison = (Comparison
               .filter(['SalePrice','Predicted_Price'])
               .assign(Difference = lambda a: abs(a.SalePrice - a.Predicted_Price))
               )
-
