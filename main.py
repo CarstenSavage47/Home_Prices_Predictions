@@ -100,13 +100,12 @@ predict = predict.data.numpy()
 
 torch.save(LinearRegression.state_dict(), './linear.pth')
 
-predict
-HomePrices['SalePrice'].reset_index()
-
 Comparison = pandas.concat([pandas.DataFrame(predict),HomePrices['SalePrice'].reset_index()],axis=1)
 Comparison.columns=['Predicted_Price','Index','SalePrice']
 
 Comparison = (Comparison
               .filter(['SalePrice','Predicted_Price'])
-              .assign(Difference = lambda a: abs(a.SalePrice - a.Predicted_Price))
+              .assign(Difference = lambda a: round(a.SalePrice - a.Predicted_Price,2))
+              .assign(Predicted_Price=lambda a: round(a.Predicted_Price))
+              .astype({"Predicted_Price":'int',"Difference":'int'})
               )
