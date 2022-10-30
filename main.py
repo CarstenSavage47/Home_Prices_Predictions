@@ -1,6 +1,7 @@
 '''
 Thank you to L1aoXingyu for help with implementing a linear regression in PyTorch.
-https://github.com/L1aoXingyu/pytorch-beginner/blob/master/01-Linear%20Regression/Linear_Regression.py'''
+https://github.com/L1aoXingyu/pytorch-beginner/blob/master/01-Linear%20Regression/Linear_Regression.py
+'''
 import pandas
 import numpy as np
 import openpyxl
@@ -40,7 +41,7 @@ y = torch.from_numpy(np.array(HomePrices['SalePrice'], dtype=np.float32))
 class linearRegression(nn.Module):
     def __init__(self):
         super(linearRegression, self).__init__()
-        self.linear = nn.Linear(289, 1)  # input and output is 1 dimension
+        self.linear = nn.Linear(289, 1)  # input -- 289 features and output -- 1 feature
 
     def forward(self, x):
         out = self.linear(x)
