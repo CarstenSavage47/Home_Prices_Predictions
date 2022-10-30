@@ -34,8 +34,19 @@ Column_VarType_Dict
 
 HomePrices = pandas.get_dummies(HomePrices)
 
-X = torch.from_numpy(np.array(HomePrices.drop(['SalePrice'],axis=1), dtype=np.float32))
-y = torch.from_numpy(np.array(HomePrices['SalePrice'], dtype=np.float32))
+HomePrices = HomePrices.dropna()
+
+X = np.array(HomePrices.drop(['SalePrice'],axis=1), dtype=np.float32)
+y = np.array(HomePrices['SalePrice'], dtype=np.float32)
+
+y = y.reshape(-1, 1)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+X = min_max_scaler.fit_transform(X)
+y = min_max_scaler.fit_transform(y)
+
+X = torch.from_numpy(X)
+y = torch.from_numpy(y)
 
 # Linear Regression Model
 class linearRegression(nn.Module):
