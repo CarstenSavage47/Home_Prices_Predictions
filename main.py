@@ -71,7 +71,7 @@ optimizer = torch.optim.SGD(LinearRegression.parameters(), lr=.01) # Optimal lea
 Remember - Errors mainly refer to difference between actual observed sample values and predicted values,
 Residuals refer exclusively to the differences between dependent variables and estimations from linear regression.
 '''
-num_epochs = 1000
+num_epochs = 100000
 for epoch in range(num_epochs):
     inputs = X
     target = y
@@ -84,7 +84,7 @@ for epoch in range(num_epochs):
     loss.backward()
     optimizer.step()
 
-    if (epoch+1) % 20 == 0:
+    if (epoch+1) % 500 == 0:
         print(f'Epoch[{epoch+1}/{num_epochs}], loss: {loss.item():.6f}')
 
 LinearRegression.eval()
