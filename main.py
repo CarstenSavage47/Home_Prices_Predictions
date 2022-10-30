@@ -92,5 +92,4 @@ plt.plot(X.numpy(), predict, label='Fitting Line')
 plt.legend()
 plt.show()
 
-
 torch.save(LinearRegression.state_dict(), './linear.pth')
