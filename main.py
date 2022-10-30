@@ -122,7 +122,7 @@ X_Shuffled = min_max_scaler.fit_transform(X_Shuffled)
 X_Shuffled_Tensor = torch.from_numpy(X_Shuffled)
 
 ''' Testing new data '''
-# Disable grad
+## Disable grad
 with torch.no_grad():
     print('True SalePrice is:',(Shuffled_Data['SalePrice']).iloc[1])
     prediction = LinearRegression(X_Shuffled_Tensor[1])
