@@ -33,7 +33,51 @@ Column_VarType_Dict
 
 HomePrices = pandas.get_dummies(HomePrices)
 
-X = HomePrices.drop(['SalePrice'],axis=1)
-y = HomePrices['SalePrice']
+X = torch.from_numpy(np.array(HomePrices.drop(['SalePrice'],axis=1), dtype=np.float32))
+y = torch.from_numpy(np.array(HomePrices['SalePrice'], dtype=np.float32))
+
+# Linear Regression Model
+class linearRegression(nn.Module):
+    def __init__(self):
+        super(linearRegression, self).__init__()
+        self.linear = nn.Linear(289, 1)  # input and output is 1 dimension
+
+    def forward(self, x):
+        out = self.linear(x)
+        return out
 
 
+LinearRegression = linearRegression()
+criterion = nn.MSELoss()
+optimizer = torch.optim.SGD(LinearRegression.parameters(), lr=.01)
+
+num_epochs = 1000
+for epoch in range(num_epochs):
+    inputs = X
+    target = y
+
+    # forward
+    out = LinearRegression(inputs)
+    loss = criterion(out, target)
+    # backward
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if (epoch+1) % 20 == 0:
+        print(f'Epoch[{epoch+1}/{num_epochs}], loss: {loss.item():.6f}')
+
+LinearRegression.eval()
+with torch.no_grad():
+    predict = LinearRegression(X)
+predict = predict.data.numpy()
+
+fig = plt.figure(figsize=(10, 5))
+plt.plot(X.numpy(), y.numpy(), 'ro', label='Original data')
+plt.plot(X.numpy(), predict, label='Fitting Line')
+
+plt.legend()
+plt.show()
+
+
+torch.save(LinearRegression.state_dict(), './linear.pth')
