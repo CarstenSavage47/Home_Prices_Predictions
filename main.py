@@ -52,11 +52,13 @@ X = min_max_scaler.fit_transform(X)
 X_Tensor = torch.from_numpy(X)
 y_Tensor = torch.from_numpy(y)
 
+N_Features = X_Tensor.size(dim=1)
+
 # Linear Regression Model
 class linearRegression(nn.Module):
     def __init__(self):
         super(linearRegression, self).__init__()
-        self.linear = nn.Linear(561, 1)  # input -- 561 features and output -- 1 feature
+        self.linear = nn.Linear(N_Features, 1)  # input -- 561 features and output -- Matrix with 1 column
     ''' A mxn matrix with 1195 rows and 561 columns (1195x561)
         ...must be multiplied with a mxn matrix with 561 rows and 1 column (561x1)
         That results in a mxn matrix with dimensions 1195x1.
@@ -110,7 +112,7 @@ Comparison = (Comparison
               #.astype({"Predicted_Price":'int',"Difference":'int'})
               )
 
-print('All X and Y Mean Difference:',Comparison.agg({"Difference":'mean'}),'ABS_Difference:',
+print('Mean Difference:',Comparison.agg({"Difference":'mean'}),'Mean ABS_Difference:',
       Comparison.agg({"ABSDifference":'mean'}))
 
 
