@@ -43,16 +43,22 @@ y = np.array(HomePrices['SalePrice'], dtype=np.float32)
 
 y = y.reshape(-1, 1)
 
+# Split dataframe into training and testing data. Remember to set a seed.
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=47)
+
 min_max_scaler = preprocessing.MinMaxScaler()
-X = min_max_scaler.fit_transform(X)
+X_train = min_max_scaler.fit_transform(X_train)
+X_test = min_max_scaler.fit_transform(X_test)
 #y = min_max_scaler.fit_transform(y)
 ''' Don't scale the depedent var. '''
 
 # Converting X and y to tensors for part 1
-X_Tensor = torch.from_numpy(X)
-y_Tensor = torch.from_numpy(y)
+X_TRTensor = torch.from_numpy(X_train)
+X_TETensor = torch.from_numpy(X_test)
+y_TRTensor = torch.from_numpy(y_train)
+y_TETensor = torch.from_numpy(y_test)
 
-N_Features = X_Tensor.size(dim=1)
+N_Features = X_TRTensor.size(dim=1)
 
 # Linear Regression Model
 class linearRegression(nn.Module):
@@ -79,8 +85,8 @@ Residuals refer exclusively to the differences between dependent variables and e
 
 num_epochs = 100000
 for epoch in range(num_epochs):
-    inputs = X_Tensor
-    target = y_Tensor
+    inputs = X_TRTensor
+    target = y_TRTensor
 
     # forward
     out = LinearRegression(inputs)
@@ -95,14 +101,12 @@ for epoch in range(num_epochs):
 
 LinearRegression.eval()
 with torch.no_grad():
-    predict = LinearRegression(X_Tensor)
-predict = predict.data.numpy()
+    predict = LinearRegression(X_TETensor)
+    predict = predict.data.numpy()
 
 torch.save(LinearRegression.state_dict(), './linear.pth')
 
-Comparison = pandas.concat([pandas.DataFrame(predict),HomePrices['SalePrice'].reset_index()],axis=1)
-Comparison.columns=['Predicted_Price','Index','SalePrice']
-
+'''
 # Compare observed - predicted
 Comparison = (Comparison
               .filter(['SalePrice','Predicted_Price'])
